@@ -1,3 +1,4 @@
 holzhacker.status
-error.log
+*.log
 holzhacker
+*.swp
