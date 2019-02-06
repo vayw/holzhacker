@@ -28,11 +28,13 @@ func GetMD5Hash(text string) string {
 
 func main() {
 	var (
-		logf    = flag.String("log", "error.log", "path to log file to process")
-		status  = flag.String("status", "holzhacker.status", "path to holzhacker status file")
-		logtype = flag.String("type", "access", "log type: access or error")
-		showerr = flag.Bool("show", false, "show last error for <log>")
-		workers = flag.Int("workers", 2, "number of workers")
+		logf            = flag.String("log", "error.log", "path to log file to process")
+		status          = flag.String("status", "holzhacker.status", "path to holzhacker status file")
+		logtype         = flag.String("type", "access", "log type: access or error")
+		showerr         = flag.Bool("show", false, "show last error for <log>")
+		workers         = flag.Int("workers", 2, "number of workers")
+		maintenance     = flag.String("mnt", "", "full path to maintenance file; skip check if exists")
+		maintenance_num = flag.Int("mnt.num", -1, "int, which will be printed in case of maintenance skip")
 	)
 	flag.Parse()
 
@@ -43,6 +45,15 @@ func main() {
 		logger.Print("last errors for " + *logf)
 		show("/run/user/", err_file_pref, *logf)
 		os.Exit(0)
+	}
+
+	if *maintenance != "" {
+		_, m_err := os.Stat(*maintenance)
+		if m_err == nil {
+			logger.Print("maintenance file found! skipping this run")
+			fmt.Println(*maintenance_num)
+			os.Exit(0)
+		}
 	}
 
 	st, err := os.OpenFile(*status, os.O_RDWR|os.O_CREATE, 0660)
