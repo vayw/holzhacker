@@ -4,11 +4,13 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/vjeantet/grok"
 )
 
-func parseError(workernum int, loglines chan string, result chan int) {
+func parseError(workernum int, loglines chan string, result chan int, errs chan string, wg *sync.WaitGroup) {
+	defer wg.Done()
 	logger_prefix := "worker " + strconv.Itoa(workernum) + " "
 	var logger = log.New(os.Stderr, logger_prefix, log.Ltime)
 	logger.Print("started..")
@@ -24,6 +26,7 @@ func parseError(workernum int, loglines chan string, result chan int) {
 		lines_count++
 		switch res["msg"] {
 		case "error", "crit":
+			errs <- line
 			err_count++
 		case nil:
 			unparsed++

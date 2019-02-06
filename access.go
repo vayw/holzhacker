@@ -4,11 +4,13 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/vjeantet/grok"
 )
 
-func parseAccess(workernum int, loglines chan string, result chan int) {
+func parseAccess(workernum int, loglines chan string, result chan int, errs chan string, wg *sync.WaitGroup) {
+	defer wg.Done()
 	logger_prefix := "worker " + strconv.Itoa(workernum) + " "
 	var logger = log.New(os.Stderr, logger_prefix, log.Ltime)
 	logger.Print("started..")
@@ -31,6 +33,7 @@ func parseAccess(workernum int, loglines chan string, result chan int) {
 		default:
 			if (res["response_code"]).(int) >= 500 {
 				err_count++
+				errs <- line
 			}
 		}
 	}
