@@ -1,0 +1,3 @@
+[[constraint]]
+  name = "github.com/vjeantet/grok"
+  version = "v1.0.0"
