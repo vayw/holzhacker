@@ -12,7 +12,7 @@ import (
 func store(logdir string, errchan chan string, pref string) {
 	userinfo, _ := user.Current()
 	uid := userinfo.Uid
-	f, err := os.Create(logdir + uid + "/holzhacker.lines." + pref)
+	f, err := os.Create(logdir + uid + "/holzhacker." + pref)
 	check(err)
 	defer f.Close()
 	for line := range errchan {
